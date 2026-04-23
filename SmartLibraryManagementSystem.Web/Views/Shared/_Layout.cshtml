@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Smart Library IoT</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <!-- MDB & Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg fixed-top">
+            <div class="container d-flex align-items-center">
+                <a class="navbar-brand me-auto d-flex align-items-center" href="/">
+                    <span class="fs-4 me-2">📚</span> <span class="d-none d-sm-inline">Smart Library IoT</span>
+                </a>
+                
+                <div class="d-flex align-items-center ms-auto">
+                    <button id="theme-toggle" class="btn btn-link nav-link px-3 py-2 me-2 border-0" aria-label="Toggle theme">
+                        <i class="bi bi-sun-fill text-warning fs-5" id="theme-icon"></i>
+                    </button>
+
+                    <div class="d-none d-lg-flex align-items-center">
+                        <ul class="navbar-nav me-3">
+                            <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Home/HotBooks">🔥 Nổi bật</a></li>
+                        </ul>
+                        @if (User.Identity?.IsAuthenticated == true) {
+                            <div class="dropdown">
+                                <button class="btn btn-tonal dropdown-toggle btn-sm px-3" type="button" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+                                    <i class="bi bi-person-circle me-1"></i> @User.Identity.Name
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2">
+                                    @if (User.IsInRole("Librarian")) {
+                                        <li><a class="dropdown-item py-2" href="/Books"><i class="bi bi-collection me-2"></i> Quản lý Sách</a></li>
+                                        <li><a class="dropdown-item py-2" href="/Users"><i class="bi bi-people me-2"></i> Độc giả</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li><a class="dropdown-item py-2 text-danger" href="/Account/Logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        } else {
+                            <a class="btn btn-primary btn-sm px-4" href="/Account/Login">Đăng nhập</a>
+                        }
+                    </div>
+
+                    <button class="btn btn-link px-2 d-lg-none" id="drawer-toggle" style="font-size: 24px;">
+                        <i class="bi bi-list text-primary"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <div class="nav-drawer" id="mobile-drawer">
+        <div class="d-flex align-items-center mb-5 mt-2">
+            <span class="fs-4">📚</span> <h5 class="mb-0 fw-bold text-primary ms-2">Smart Library IoT</h5>
+        </div>
+        <nav>
+            <a href="/" class="drawer-link"><i class="bi bi-house-door me-3 fs-5"></i> Trang chủ</a>
+            <a href="/Home/HotBooks" class="drawer-link"><i class="bi bi-fire me-3 fs-5"></i> Sách Nổi Bật</a>
+            
+            @if (User.IsInRole("Librarian")) {
+                <hr class="my-3 opacity-10">
+                <div class="small fw-bold text-muted px-4 mb-2 text-uppercase">Quản Trị</div>
+                <a href="/Books" class="drawer-link"><i class="bi bi-book me-3 fs-5"></i> Kho Sách</a>
+                <a href="/Users" class="drawer-link"><i class="bi bi-people me-3 fs-5"></i> Độc giả</a>
+                <a href="/Borrow" class="drawer-link"><i class="bi bi-arrow-left-right me-3 fs-5"></i> Mượn Trả</a>
+                <a href="/Statistics" class="drawer-link"><i class="bi bi-graph-up me-3 fs-5"></i> Thống kê</a>
+            }
+            
+            <hr class="my-4 opacity-10">
+            @if (User.Identity?.IsAuthenticated == true) {
+                <a href="/Account/Logout" class="drawer-link text-danger"><i class="bi bi-box-arrow-right me-3 fs-5"></i> Đăng xuất</a>
+            } else {
+                <a href="/Account/Login" class="btn btn-primary w-100 rounded-pill mt-3">Đăng nhập</a>
+            }
+        </nav>
+    </div>
+
+    <div class="container main-content mt-4">
+        <main role="main" class="pb-5">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Global AI Assistant -->
+    <div id="chatbot-bubble" class="chatbot-bubble shadow-lg">
+        <i class="bi bi-stars"></i>
+    </div>
+    <div id="chatbot-intro" class="chatbot-intro">
+        Hỏi trợ lý AI ngay! ✨
+    </div>
+    <div id="chatbot-window" class="chatbot-window shadow-2-strong">
+        <div class="chatbot-header">
+            <div class="d-flex align-items-center">
+                <div class="p-2 bg-white bg-opacity-25 rounded-circle me-3"><i class="bi bi-stars"></i></div>
+                <div><h6 class="mb-0 fw-bold">AI Thủ Thư</h6><small class="opacity-75">Tư vấn chọn sách thông minh</small></div>
+            </div>
+            <button class="btn btn-link text-white p-2 border-0" id="chatbot-close"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <div class="chat-msg ai">Chào bạn! Mình là trợ lý AI. Bạn cần tìm sách gì hôm nay? 😊</div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Hỏi AI về sách..." autocomplete="off">
+            <button id="chatbot-send" class="btn btn-primary p-0 d-flex align-items-center justify-content-center" style="width: 48px; min-width: 48px; border-radius: 16px !important;"><i class="bi bi-send-fill"></i></button>
+        </div>
+    </div>
+
+    <!-- Global IoT Modal -->
+    <div class="modal fade" id="iotLocatorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content overflow-hidden" style="border-radius: 32px;">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold text-primary">📦 IoT Shelf Locator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-5">
+                    <div id="iot-step-connecting">
+                        <div class="spinner-border text-primary mb-4" role="status" style="width:3rem;height:3rem;border-width:4px;"></div>
+                        <h5>Đang tìm tín hiệu...</h5>
+                    </div>
+                    <div id="iot-step-found" style="display:none;">
+                        <div class="mb-4"><i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i></div>
+                        <h4 class="fw-bold mb-3">Đã tìm thấy trên kệ <span id="iot-shelf-code-modal" class="text-primary"></span></h4>
+                        <p class="text-muted">Đèn LED tại giá sách đang nháy màu xanh để bạn dễ nhận biết.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button class="btn btn-tonal px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-5 text-center bg-surface-container-low border-top">
+        <div class="container">
+            <span class="text-muted small">© 2026 Smart Library IoT • Material 3 Unification</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Theme Toggle
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const htmlTag = document.documentElement;
+
+            if (localStorage.getItem('theme') === 'dark') {
+                htmlTag.setAttribute('data-theme', 'dark');
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = htmlTag.getAttribute('data-theme') === 'dark';
+                htmlTag.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                themeIcon.classList.replace(isDark ? 'bi-moon-stars-fill' : 'bi-sun-fill', isDark ? 'bi-sun-fill' : 'bi-moon-stars-fill');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            });
+
+            // Drawer Logic
+            const drawer = $('#mobile-drawer');
+            const overlay = $('#drawer-overlay');
+            const toggle = $('#drawer-toggle');
+            toggle.click(() => { drawer.addClass('active'); overlay.addClass('active'); });
+            overlay.click(() => { drawer.removeClass('active'); overlay.removeClass('active'); });
+
+            // Chatbot UI Logic
+            const bubble = $('#chatbot-bubble');
+            const windowObj = $('#chatbot-window');
+            const close = $('#chatbot-close');
+            const intro = $('#chatbot-intro');
+
+            setTimeout(() => { if (!windowObj.hasClass('active')) intro.fadeIn().delay(5000).fadeOut(); }, 3000);
+
+            bubble.click((e) => { e.stopPropagation(); windowObj.toggleClass('active'); intro.hide(); });
+            close.click(() => { windowObj.removeClass('active'); });
+            $(document).click(e => { if (!$(e.target).closest('#chatbot-window, #chatbot-bubble').length) windowObj.removeClass('active'); });
+
+            // IoT Global Handler
+            $(document).on('click', '.btn-locate', function() {
+                const shelf = $(this).data('shelf');
+                $('#iot-shelf-code-modal').text(shelf);
+                $('#iot-step-connecting').show();
+                $('#iot-step-found').hide();
+                const modalEl = document.getElementById('iotLocatorModal');
+                const modal = (typeof bootstrap !== 'undefined' && bootstrap.Modal) ? bootstrap.Modal.getOrCreateInstance(modalEl) : new mdb.Modal(modalEl);
+                modal.show();
+                setTimeout(() => { $('#iot-step-connecting').hide(); $('#iot-step-found').fadeIn(); }, 1500);
+            });
+
+            // AI Logic
+            $("#chatbot-send").click(function () {
+                var msg = $("#chatbot-input").val();
+                if (!msg) return;
+                $('#chatbot-messages').append(`<div class="chat-msg user">${msg}</div>`);
+                $("#chatbot-input").val("");
+                const loadId = "load-" + Date.now();
+                $('#chatbot-messages').append(`<div id="${loadId}" class="chat-msg ai opacity-50">...</div>`);
+                const msgBox = $('#chatbot-messages');
+                msgBox.scrollTop(msgBox[0].scrollHeight);
+
+                $.post('/AiAssistant/AskAi', { userMessage: msg }, function (res) {
+                    $("#" + loadId).remove();
+                    $('#chatbot-messages').append(`<div class="chat-msg ai">${res.success ? res.reply : "Lỗi: " + res.reply}</div>`);
+                    msgBox.scrollTop(msgBox[0].scrollHeight);
+                });
+            });
+            $(document).on("keydown", "#chatbot-input", e => { if (e.key === "Enter") $("#chatbot-send").click(); });
+
+            // Clickable Cards
+            $(document).on('click', '.clickable-card', function(e) {
+                if ($(e.target).closest('a, button, form').length) return;
+                const link = $(this).find('a').first().attr('href');
+                if (link) window.location.href = link;
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

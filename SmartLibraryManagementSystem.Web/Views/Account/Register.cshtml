@@ -1,0 +1,62 @@
+@{ ViewData["Title"] = "Đăng ký"; }
+
+<div class="row justify-content-center align-items-center mb-5" style="min-height: 80vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg p-3" style="border-radius: 36px !important;">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex bg-success bg-opacity-10 p-4 rounded-circle mb-3">
+                        <i class="bi bi-person-plus-fill text-success fs-1"></i>
+                    </div>
+                    <h2 class="fw-bold text-success">Tạo Tài Khoản</h2>
+                    <p class="text-muted small">Tham gia hệ thống thư viện thông minh</p>
+                </div>
+
+                @if (ViewBag.Error != null) { 
+                    <div class="alert btn-tonal border-0 text-center mb-4" style="border-radius: 16px; color: #852221; background: #f9dedc;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                    </div> 
+                }
+
+                <form method="post" action="/Account/Register">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="fullName" class="form-control rounded-4 border-surface-variant bg-white" id="nameInp" placeholder="Họ và tên" required />
+                                <label for="nameInp">Họ và tên</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="username" class="form-control rounded-4 border-surface-variant bg-white" id="userInp" placeholder="Tên đăng nhập" required />
+                                <label for="userInp">Tên đăng nhập</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="studentClass" class="form-control rounded-4 border-surface-variant bg-white" id="classInp" placeholder="Lớp" required />
+                                <label for="classInp">Lớp (VD: CNTT K20)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input type="password" name="password" class="form-control rounded-4 border-surface-variant bg-white" id="passInp" placeholder="Mật khẩu" required />
+                        <label for="passInp">Mật khẩu</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm">
+                        ĐĂNG KÝ NGAY <i class="bi bi-check-lg ms-2"></i>
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-2">
+                    <p class="small text-muted mb-0">Đã có tài khoản? <a href="/Account/Login" class="text-success fw-bold text-decoration-none">Đăng nhập ngay</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

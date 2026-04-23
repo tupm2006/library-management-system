@@ -1,0 +1,29 @@
+@{ ViewData["Title"] = "Cho mượn sách"; }
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white fw-bold"><i class="bi bi-journal-plus"></i> Lập Phiếu Mượn Sách</div>
+            <div class="card-body">
+                <form asp-action="BorrowBook" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Chọn Người Mượn</label>
+                        <select name="studentId" class="form-select" asp-items="ViewBag.Users" required>
+                            <option value="">-- Chọn Sinh Viên --</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Chọn Sách</label>
+                        <select name="bookId" class="form-select" asp-items="ViewBag.Books" required>
+                            <option value="">-- Chọn Sách --</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                        <button type="submit" class="btn btn-success fw-bold">Xác nhận cho mượn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

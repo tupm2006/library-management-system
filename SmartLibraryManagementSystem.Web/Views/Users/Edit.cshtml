@@ -1,0 +1,46 @@
+@model SmartLibraryManagementSystem.Data.Entities.User
+@{ ViewData["Title"] = "Sửa User"; }
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-warning text-dark fw-bold"><i class="bi bi-pencil-square"></i> Cập nhật User</div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Họ và Tên</label>
+                            <input asp-for="FullName" class="form-control" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Tài Khoản (Username)</label>
+                            <input asp-for="Username" class="form-control" readonly /> 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Mật khẩu mới</label>
+                            <input asp-for="PasswordHash" class="form-control" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Lớp</label>
+                            <input asp-for="StudentClass" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vai Trò (Role)</label>
+                        <select asp-for="Role" class="form-select">
+                            <option value="Student">Sinh viên (Student)</option>
+                            <option value="Librarian">Thủ thư (Librarian)</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                        <button type="submit" class="btn btn-warning fw-bold">Lưu Thay Đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

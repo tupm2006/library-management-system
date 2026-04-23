@@ -1,0 +1,91 @@
+@model IEnumerable<SmartLibraryManagementSystem.Data.Entities.Reservation>
+@{ ViewData["Title"] = "Duyệt Đơn Đặt Sách"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h2 class="text-primary fw-bold"><i class="bi bi-inboxes-fill"></i> Quản Lý Đơn Đặt Sách (Online)</h2>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm fw-bold" role="alert">
+        <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã Đơn</th>
+                        <th>Sinh Viên Đặt</th>
+                        <th>Tên Sách (Mã IoT)</th>
+                        <th>Thời Gian Đặt</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-muted">#@item.Id</td>
+                                <td class="fw-bold">@(item.Student?.FullName ?? "N/A")</td>
+                                <td>
+                                    <span class="text-primary fw-bold">@(item.Book?.Title ?? "N/A")</span><br />
+                                    <small class="badge bg-secondary">Kệ: @(item.Book?.ShelfCode ?? "N/A")</small>
+                                </td>
+                                <td>@item.ReservationDate.ToString("HH:mm - dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="bi bi-hourglass-split"></i> Chờ duyệt</span>
+                                    }
+                                    else if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-lg"></i> Đã giao sách</span>
+                                    }
+                                    else if (item.Status == "Expired")
+                                    {
+                                        <span class="badge bg-danger px-3 py-2 rounded-pill">Hủy tự động (Quá 24h)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-dark px-3 py-2 rounded-pill">Đã hủy</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <form asp-action="Approve" method="post" class="m-0">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success fw-bold"><i class="bi bi-check-circle"></i> Giao Sách</button>
+                                            </form>
+                                            <form asp-action="Cancel" method="post" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này và trả sách lên giá không?');">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> Hủy</button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small"><i class="bi bi-lock-fill"></i> Đã đóng</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="6" class="text-center py-5 text-muted">Hiện tại không có đơn đặt sách nào!</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

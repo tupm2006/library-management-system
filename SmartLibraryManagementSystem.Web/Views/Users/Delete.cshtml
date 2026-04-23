@@ -1,0 +1,16 @@
+@model SmartLibraryManagementSystem.Data.Entities.User
+@{ ViewData["Title"] = "Xóa User"; }
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="alert alert-danger shadow-sm">
+            <h4 class="alert-heading fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo!</h4>
+            <p>Xóa tài khoản <strong>@Model.FullName (@Model.Username)</strong> khỏi hệ thống?</p>
+            <form asp-action="Delete" method="post" class="d-flex justify-content-between mt-3">
+                <input type="hidden" asp-for="Id" />
+                <a asp-action="Index" class="btn btn-light border">Hủy</a>
+                <button type="submit" class="btn btn-danger fw-bold">Đúng, Xóa ngay!</button>
+            </form>
+        </div>
+    </div>
+</div>

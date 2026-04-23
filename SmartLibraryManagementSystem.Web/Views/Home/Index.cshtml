@@ -1,0 +1,119 @@
+@model IEnumerable<SmartLibraryManagementSystem.Data.Entities.Book>
+@{ ViewData["Title"] = "Trang chủ"; }
+
+<div class="row mt-3 mb-5">
+    <div class="col-12">
+        <div class="m3-hot-card shadow-lg p-5 text-center" style="background: var(--m3-primary-container); border-radius: 32px;">
+            <div class="m3-badge mb-4" style="background: var(--m3-tertiary-container); color: var(--m3-on-tertiary-container);">
+                <i class="bi bi-fire"></i> Đang Hot Tuần Này
+            </div>
+            
+            <div id="hotBooksCarousel" class="carousel slide w-100" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <h2 class="display-6 fw-bold mb-3">"Clean Code"</h2>
+                        <p class="lead opacity-75">Robert C. Martin - Cuốn sách gối đầu giường của mọi Lập trình viên.</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h2 class="display-6 fw-bold mb-3">"AI: A Modern Approach"</h2>
+                        <p class="lead opacity-75">Stuart Russell - Khám phá thế giới AI từ cơ bản đến chuyên sâu.</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h2 class="display-6 fw-bold mb-3">"The Pragmatic Programmer"</h2>
+                        <p class="lead opacity-75">Andrew Hunt - Hành trình trở thành bậc thầy lập trình chuyên nghiệp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mb-5">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm text-center py-3 mb-4 rounded-5" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+    <div class="col-md-8">
+        <form asp-action="Index" method="get">
+            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden bg-surface" style="border: 1px solid var(--m3-outline);">
+                <span class="input-group-text bg-transparent border-0 ps-4"><i class="bi bi-search text-primary"></i></span>
+                <input type="text" name="searchString" value="@ViewBag.CurrentSearch" class="form-control border-0 bg-transparent fs-5" placeholder="Tìm tên sách, tác giả...">
+                <button class="btn btn-primary px-5 rounded-pill m-1" type="submit">Tìm Sách</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mb-5">
+    <h1 class="fw-bold text-primary mb-2">Kiosk Tra Cứu</h1>
+    <p class="text-muted fs-5">Hệ thống thư viện thông minh hỗ trợ IoT & AI</p>
+</div>
+
+<div class="row g-4 mb-5">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var book in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card h-100 clickable-card">
+                    <div class="position-relative overflow-hidden" style="border-radius: 28px 28px 4px 4px;">
+                        <img src="https://picsum.photos/seed/@book.BookCode/450/600" class="card-img-top" alt="Cover" style="height: 300px; object-fit: cover; transition: transform 0.5s ease;">
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-primary shadow-sm">Kệ: @book.ShelfCode</span>
+                        </div>
+                    </div>
+                    <div class="card-body px-4 pt-4">
+                        <h6 class="card-title fw-bold mb-1 text-truncate">
+                            <a href="/Home/BookDetails/@book.Id" class="text-dark text-decoration-none">@book.Title</a>
+                        </h6>
+                        <p class="text-muted small mb-2">@book.Author</p>
+                        <div class="d-flex align-items-center mb-0">
+                            <i class="bi bi-star-fill text-warning me-1"></i>
+                            <i class="bi bi-star-fill text-warning me-1"></i>
+                            <i class="bi bi-star-fill text-warning me-1"></i>
+                            <i class="bi bi-star-fill text-warning me-1"></i>
+                            <i class="bi bi-star-half text-warning me-2"></i>
+                            <span class="small text-muted">(4.5)</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 px-4 pb-4">
+                        @if (User.IsInRole("Student"))
+                        {
+                            <div class="d-grid gap-2">
+                                <form asp-controller="Home" asp-action="ReserveBook" method="post" class="m-0">
+                                    <input type="hidden" name="bookId" value="@book.Id" />
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-bookmark-plus me-1"></i> Đăng ký mượn
+                                    </button>
+                                </form>
+                                <a href="/Home/BookDetails/@book.Id" class="btn btn-tonal w-100 text-center">
+                                    Chi tiết
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-locate" data-bookid="@book.Id" data-shelf="@book.ShelfCode">
+                                    <i class="bi bi-geo-alt-fill me-1"></i> Tìm trên kệ (IoT)
+                                </button>
+                                <a href="/Home/BookDetails/@book.Id" class="btn btn-tonal w-100 text-center">
+                                    Xem chi tiết
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">Không tìm thấy sách phù hợp!</h4>
+            <a href="/" class="btn btn-m3-tonal mt-3">Xóa bộ lọc</a>
+        </div>
+    }
+</div>

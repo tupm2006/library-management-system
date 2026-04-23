@@ -1,0 +1,27 @@
+@model IEnumerable<SmartLibraryManagementSystem.Data.Entities.Reservation>
+
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<h1>My Reservations</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book Title</th>
+            <th>Reserve Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Book.Title</td>
+                <td>@reservation.ReserveDate.ToShortDateString()</td>
+                <td>@reservation.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
